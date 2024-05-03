@@ -5,6 +5,7 @@ from slack_bolt.adapter.flask import SlackRequestHandler
 from slack_bolt import App
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, request
+import json
 
 #For RAG
 
@@ -133,10 +134,19 @@ def process_llm_response(llm_response):
     response = wrap_text_preserve_newlines(llm_response['result'])
     return response
 
+def create_pair_json(query, response):
+    pair = {
+        "query": query,
+        "response": response
+    }
+    return json.dumps(pair)
+
 def my_function(query):
     book_text = parse_pdf()
     vector_db = creating_vectorDB(book_text)
     response = create_retriever(vector_db, query)
+    pair_json = create_pair_json(query, response)
+    # return pair_json
     return response
 
 
